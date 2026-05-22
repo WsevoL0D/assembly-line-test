@@ -7,6 +7,18 @@ on:
       - '.github/workflows/**'
       - 'vehicles/**'
   workflow_dispatch:
+        inputs:
+          environment:
+            description: 'Target environment'
+            type: choice
+            options:
+              - staging
+              - production
+            default: staging
+          vehicle:
+            description: 'Vehicle to highlight in the report'
+            type: string
+            default: 'all'
 
 jobs:
   start:
@@ -19,6 +31,14 @@ jobs:
 
       - name: Print start message
         run: echo "Starting assembly of the vehicles"
+
+      - name: Print manual run info
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          VEHICLE: ${{ inputs.vehicle }}
+          ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          echo "Manual run: deploying $VEHICLE to $ENVIRONMENT"
 
   build_car:
     needs: start
