@@ -164,14 +164,15 @@ jobs:
           grep "motorbike" build/spare_parts_motorbike.txt
           echo "Motorbike tests passed!"
 
+  # BUG 2: needs: build_truck is missing — test_truck may start before build_truck finishes
   test_truck:
-    needs: build_truck
     runs-on: ubuntu-latest
     steps:
+      # BUG 1: artifact name is wrong — 'truck-output' does not exist; should be 'truck-files'
       - name: Download truck artifact
         uses: actions/download-artifact@v7
         with:
-          name: truck-files
+          name: truck-output
           path: build/
 
       - name: Test truck
@@ -201,10 +202,12 @@ jobs:
           test ! -f build/invoice_truck.txt
           echo "All vehicles assembled and invoices correctly excluded!"
 
+  # BUG 3: if: condition uses 'passed' instead of 'success' — job will always be skipped
   quality_report:
     needs: [test_car, test_motorbike, test_truck]
     runs-on: ubuntu-latest
     continue-on-error: true
+    if: needs.test_car.result == 'passed'
     steps:
       - name: Download all artifacts
         uses: actions/download-artifact@v7
