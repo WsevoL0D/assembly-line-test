@@ -1,0 +1,5 @@
+name: Chevrolet impala
+mfg_date: 1967
+length: 5,310 mm
+width: 1,975 mm
+height: 1,450 mm
