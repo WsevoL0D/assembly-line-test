@@ -13,6 +13,7 @@ jobs:
         run: echo "Starting assembly of the vehicles"
 
   build_car:
+    container: ubuntu:22.04
     needs: start
     runs-on: ubuntu-latest
     steps:
@@ -167,6 +168,27 @@ jobs:
           test ! -f build/invoice_motorbike.txt
           test ! -f build/invoice_truck.txt
           echo "All vehicles assembled and invoices correctly excluded!"
+
+  quality_report:
+    needs: [test_car, test_motorbike, test_truck]
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v7
+        with:
+          merge-multiple: true
+          path: build
+
+      - name: Write quality report summary
+        run: |
+          exit 1
+          echo "## Quality Report" >> $GITHUB_STEP_SUMMARY
+          echo "| Vehicle | File | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---------|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Car | car.txt | ✅ Present |" >> $GITHUB_STEP_SUMMARY
+          echo "| Motorbike | motorbike.txt | ✅ Present |" >> $GITHUB_STEP_SUMMARY
+          echo "| Truck | truck.txt | ✅ Present |" >> $GITHUB_STEP_SUMMARY
 
   deploy_car:
     needs: test_car
