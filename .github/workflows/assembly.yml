@@ -20,6 +20,9 @@ on:
         type: string
         default: 'all'
 
+env:
+  ASSEMBLY_PLANT: "Factory A"
+
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
@@ -47,11 +50,24 @@ jobs:
       - name: Dump github context
         run: echo '${{ toJSON(github) }}'
 
+      - name: Write version to summary
+        run: |
+          echo "App Version: ${{ vars.APP_VERSION }}" >> $GITHUB_STEP_SUMMARY
+
+      - name: Print assembly plant
+        run: |
+          echo "Assembling at: $ASSEMBLY_PLANT"
+
   build_car:
     needs: start
     runs-on: ubuntu-latest
     container: ubuntu:22.04
+    env:
+      ASSEMBLY_PLANT: "Factory B"
     steps:
+      - name: Print assembly plant
+        run: |
+          echo "Assembling at: $ASSEMBLY_PLANT"
       - name: Assemble car
         run: |
           mkdir -p build
@@ -80,6 +96,9 @@ jobs:
     needs: start
     runs-on: ubuntu-latest
     steps:
+      - name: Print assembly plant
+        run: |
+          echo "Assembling at: $ASSEMBLY_PLANT"
       - name: Assemble motorbike
         run: |
           mkdir -p build
@@ -109,6 +128,9 @@ jobs:
     needs: start
     runs-on: ubuntu-latest
     steps:
+      - name: Print assembly plant
+        run: |
+          echo "Assembling at: $ASSEMBLY_PLANT"
       - name: Assemble truck
         run: |
           mkdir -p build
