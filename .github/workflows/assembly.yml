@@ -68,6 +68,15 @@ jobs:
       - name: Print assembly plant
         run: |
           echo "Assembling at: $ASSEMBLY_PLANT"
+
+      - name: Generate build tag
+        id: tag_step
+        run: echo "car_tag=car-build-${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: Print build tag
+        run: |
+          echo "Car build tag: ${{ steps.tag_step.outputs.car_tag }}"
+
       - name: Assemble car
         run: |
           mkdir -p build
